@@ -1,11 +1,11 @@
 #  DCASE Anomaly Detection with EAT + LoRA
 
-이 프로젝트는 DCASE Task 2(기계 이상음 탐지)를 위한 딥러닝 모델입니다. 사전 학습된 **EAT(Efficient Audio Transformer)** 모델에 **LoRA**를 적용하여 효율적으로 학습하고, 정상 데이터의 임베딩을 저장하여 **KNN 기반의 거리 계산**을 통해 비정상 여부를 판별합니다.
+이 프로젝트는 DCASE Task 2를 위한 딥러닝 모델입니다. 사전 학습된 **EAT** 모델에 **LoRA**를 적용하여 효율적으로 학습하고, 정상 데이터의 임베딩을 저장하여 **KNN 기반의 거리 계산**을 통해 비정상 여부를 판별합니다.
 
 ##  Key Features
 
 * **Model Architecture**: `worstchan/EAT-base_epoch30_pretrain` 기반.
-* **Efficient Fine-tuning**: **LoRA (Low-Rank Adaptation)** 를 적용하여 적은 파라미터로 효과적인 전이 학습(Transfer Learning) 수행.
+* **Efficient Fine-tuning**: **LoRA (Low-Rank Adaptation)** 를 적용하여 적은 파라미터로 효과적인 전이 학습 수행.
 * **Anomaly Detection**: 정상 데이터의 임베딩을 Memory Bank로 구축하고, 테스트 데이터와의 Cosine Distance를 기반으로 KNN Scoring 수행.
 * **Preprocessing**: Log-Mel Spectrogram 변환.
 
@@ -97,5 +97,6 @@ uv run evaluate.py -k 5
 * **Metric**: AUROC (Area Under the ROC Curve)
 * **Method**: KNN Anomaly Scoring (Cosine Distance)
 * 평가 스크립트 실행 시 전체 평균 성능(Overall AUROC)과 기계 타입(Machine Type)별 성능을 확인할 수 있습니다.
+
 
 
