@@ -19,6 +19,7 @@ git clone https://github.com/junjunsang/EAT-Anomaly-Detection.git
 cd EAT-Anomaly-Detection
 
 # 2. 의존성 설치 및 가상환경 세팅 (CUDA 12.1 PyTorch 자동 설치)
+uv venv
 uv sync
 
 ```
@@ -97,6 +98,7 @@ uv run evaluate.py -k 5
 * **Metric**: AUROC (Area Under the ROC Curve)
 * **Method**: KNN Anomaly Scoring (Cosine Distance)
 * 평가 스크립트 실행 시 전체 평균 성능(Overall AUROC)과 기계 타입(Machine Type)별 성능을 확인할 수 있습니다.
+
 
 
 
