@@ -4,13 +4,12 @@ from dataset import DCASE_Dataset
 from tqdm import tqdm
 import os
 import numpy as np
-# confusion_matrix, roc_curve는 삭제하고 roc_auc_score만 남겼습니다.
 from sklearn.metrics import roc_auc_score
 import torch.nn.functional as F
 import argparse
 
-from transformers import AutoModel
-from peft import LoraConfig, get_peft_model
+# 👇 여기부터 model.py를 가져오는 방식으로 변경!
+from model import EAT_Classifier
 
 def evaluate_per_machine_type(k):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -22,10 +21,16 @@ def evaluate_per_machine_type(k):
         print(f"필요한 파일이 없습니다.")
         return
         
-    print("훈련된 인코더와 정상 임베딩 라이브러리를 로딩합니다...")
-    encoder = AutoModel.from_pretrained("worstchan/EAT-base_epoch30_pretrain", trust_remote_code=True)
-    lora_config = LoraConfig(r=8, lora_alpha=32, target_modules=["qkv", "proj"])
-    encoder = get_peft_model(encoder, lora_config)
+    print("모델 구조를 로딩합니다 (model.py 설정 공유)...")
+    
+    # 1. 껍데기 모델 생성 (평가만 할 거라 num_classes는 아무 숫자나 OK)
+    # model.py에 있는 LoRA 설정(r=8, alpha=32 등)을 그대로 가져옵니다.
+    temp_model = EAT_Classifier(num_classes=1)
+    
+    # 2. 필요한 'encoder' 부분만 분리
+    encoder = temp_model.encoder
+
+    print(f"'{encoder_save_path}'에서 학습된 가중치를 로드합니다...")
     encoder.load_state_dict(torch.load(encoder_save_path))
     encoder.to(device)
     encoder.eval()
@@ -47,10 +52,23 @@ def evaluate_per_machine_type(k):
             is_normal = is_normal_batch[0].item()
             machine_type = machine_type_str_batch[0]
             
+            # 인코더 통과
             outputs = encoder(spec)
-            test_embedding = outputs.last_hidden_state[:, 0, :] if hasattr(outputs, "last_hidden_state") else outputs[:, 0, :]
+            
+            # CLS 토큰 추출 (시퀀스의 0번째 벡터)
+            if hasattr(outputs, "last_hidden_state"):
+                test_embedding = outputs.last_hidden_state[:, 0, :]
+            else:
+                test_embedding = outputs[:, 0, :]
+            
+            # 코사인 유사도를 이용한 거리 계산 (1 - 유사도 = 거리)
+            # test_embedding: (1, dim), normal_embeddings: (N, dim) -> 브로드캐스팅 됨
             distances = 1 - F.cosine_similarity(test_embedding, normal_embeddings)
+            
+            # 가장 가까운 K개의 이웃 찾기
             top_k_distances, _ = torch.topk(distances, k, largest=False)
+            
+            # 평균 거리를 이상 점수(Anomaly Score)로 사용
             score = torch.mean(top_k_distances).item()
             
             anomaly_scores.append(score)
