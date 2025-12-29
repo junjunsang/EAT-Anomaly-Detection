@@ -5,10 +5,7 @@
 ##  Key Features
 
 * **Model Architecture**: `worstchan/EAT-base_epoch30_pretrain` 기반.
-* 
-**Efficient Fine-tuning**: **LoRA (Low-Rank Adaptation)** 를 적용하여 적은 파라미터로 효과적인 전이 학습(Transfer Learning) 수행.
-
-
+* **Efficient Fine-tuning**: **LoRA (Low-Rank Adaptation)** 를 적용하여 적은 파라미터로 효과적인 전이 학습(Transfer Learning) 수행.
 * **Anomaly Detection**: 정상 데이터의 임베딩을 Memory Bank로 구축하고, 테스트 데이터와의 Cosine Distance를 기반으로 KNN Scoring 수행.
 * **Preprocessing**: Log-Mel Spectrogram 변환.
 
@@ -100,4 +97,5 @@ uv run evaluate.py -k 5
 * **Metric**: AUROC (Area Under the ROC Curve)
 * **Method**: KNN Anomaly Scoring (Cosine Distance)
 * 평가 스크립트 실행 시 전체 평균 성능(Overall AUROC)과 기계 타입(Machine Type)별 성능을 확인할 수 있습니다.
+
 
