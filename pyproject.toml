@@ -1,0 +1,32 @@
+[project]
+name = "dcase-anomaly-detection"
+version = "0.1.0"
+description = "DCASE Task 2 Project"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy",
+    "pandas",
+    "scipy",
+    "scikit-learn",
+    "tqdm",
+    "soundfile",
+    "safetensors",
+    "transformers",
+    "peft",
+    "accelerate",
+    "timm",
+    "torch",
+    "torchaudio",
+    "torchvision",
+]
+
+[[tool.uv.index]]
+name = "pytorch"
+url = "https://download.pytorch.org/whl/cu121"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch" }
+torchaudio = { index = "pytorch" }
+torchvision = { index = "pytorch" }
